@@ -7,17 +7,24 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NormalBusCrawler {
 
-    private static String getXml(int code, String type) throws Exception{ // 리퀘 받아오는 코드 (인코딩 문제로 jsoup과 분리.)
+
+    /*
+    xml받아오기 : 인코딩 문제로 jsoup 과 분리하였음.
+     */
+    private static String getXml(int code, String type) throws Exception {
         String USER_AGENT = "Mozilla/5.0";
         String key = "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D";
         String path = "";
-        if (type=="station") {
+        if (type == "station") {
             path = "http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?ServiceKey=" + key + "&arsId=" + code;
         }
-        if (type=="bus") {
+        if (type == "bus") {
             path = ""; // 버스 노선 조회 api 링크 가져오기
         }
         URL url = new URL(path);
@@ -35,20 +42,118 @@ public class NormalBusCrawler {
         return response.toString();
 
     }
+
+
+    /*
+    정류장 검색
+     */
     private static void findStation(int arsId) throws Exception {
 
-        String entireXml=getXml(arsId, "station");
+        String entireXml = getXml(arsId, "station");
         Document doc = Jsoup.parse(entireXml);
-        System.out.println(doc);
-        // 여기 아래에 jsoup으로 크롤링 코드 작성 //
-
+        int len = doc.select("busRouteId").size();
+        List<String> eachNb = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            eachNb.add(
+                    doc.select("busRouteId").get(i).text() + "/" +
+                            doc.select("rtNm").get(i).text() + "/" +
+                            doc.select("arrmsg1").get(i).text() + "/" +
+                            doc.select("isFullFlag1").get(i).text()
+            );
+        }
+        for (String v : eachNb) {
+            System.out.println(v + "\n");
+        }
     }
+
+    /*
+    버스 검색
+    */
     private static void findBusRoute(int bus_code) throws Exception {
 
-        String entireXml=getXml(bus_code, "station");
+        String entireXml = getXml(bus_code, "bus");
         Document doc = Jsoup.parse(entireXml);
-        System.out.println(doc);
-        // 여기 아래에 jsoup으로 크롤링 코드 작성 //
-        
+        String basic =
+                doc.select("busRouteId").first().text() + "/" +
+                        doc.select("rtNm").first().text() + "/" +
+                        doc.select("term").first().text() + "/" +
+                        doc.select("firstTm").first().text() + "/" +
+                        doc.select("lastTm").first().text() + "/";
+
+        int len = doc.select("busRouteId").size();
+
+        List<String> eachStation = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            eachStation.add(
+                    doc.select("stId").get(i).text() + "/" +
+                            doc.select("stNm").get(i).text() + "/"
+            );
+        }
+
+        ////////////////////////////////////////////////////////////
+        ///////////////////operating bus////////////////////////////
+        ////////////////////////////////////////////////////////////
+        List<String> operatingBus = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            operatingBus.add(
+//                    doc.select("stationNm1").get(i).text()+"/"+
+                    doc.select("plainNo1").get(i).text() + "/" +
+//                    doc.select("stationNm2").get(i).text()+"/"+
+                            doc.select("plainNo2").get(i).text() + "/" +
+                            doc.select("nstnId1").get(i).text() + "/" + // 차선
+                            doc.select("nstnId2").get(i).text() + "/" // 차선
+
+            );
+        }
+
+        ///////////////////////요 사이만 코딩하면 됩니다//////////////////////
+
+        System.out.println(basic);
+        System.out.println("##########################################3");
+        for (String v : eachStation) {
+            System.out.println(v + "\n");
+        }
+
+        System.out.println("##########################################3");
+        for (String v : operatingBus) {
+            System.out.println(v + "\n");
+        }
+    }
+
+
+        /*
+        busRouteId
+        rtNm
+        출발지
+        도착지
+        term
+        firstTm
+        lastTm
+        dir 방향
+        회차지
+        stations [
+            idx 인덱스
+            stId
+            stNm
+            ]
+        operating [
+            stationNm1
+            stationNm2
+            plainNo1
+            plainNo2
+            탑:x
+         */
+
+
+    // test용 main 코드 //
+    public static void main(String[] args) {
+
+        try {
+            findStation(21278);
+            findBusRoute(100100118);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
