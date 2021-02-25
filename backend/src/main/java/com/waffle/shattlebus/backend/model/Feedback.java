@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class Feedback {
 
+   // @Id @GeneratedValue // jpa사용??
     private String id;
     private int date;
     private String type;

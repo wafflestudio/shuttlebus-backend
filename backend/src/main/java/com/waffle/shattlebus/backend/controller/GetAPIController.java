@@ -18,6 +18,7 @@ public class GetAPIController {
 
         // 정류장 db 사용 여부 ??
 
+
         return "정류장 id 상세: " + id;
     }
 

@@ -24,6 +24,9 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
+
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
 }
 
 test {
