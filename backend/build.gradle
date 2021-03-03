@@ -26,7 +26,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
 
-    compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20180813'
 }
 
 test {

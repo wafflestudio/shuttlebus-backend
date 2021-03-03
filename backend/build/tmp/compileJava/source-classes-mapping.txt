@@ -1,9 +1,9 @@
-com/waffle/shattlebus/backend/controller/ShuttleBusCrawler.java
- com.waffle.shattlebus.backend.controller.ShuttleBusCrawler
 com/waffle/shattlebus/backend/controller/NormalBusCrawler.java
  com.waffle.shattlebus.backend.controller.NormalBusCrawler
-com/waffle/shattlebus/backend/controller/PostAPIController.java
- com.waffle.shattlebus.backend.controller.PostAPIController
+com/waffle/shattlebus/backend/controller/ShuttleBusCrawler.java
+ com.waffle.shattlebus.backend.controller.ShuttleBusCrawler
+com/waffle/shattlebus/backend/searching/SearchHangul.java
+ com.waffle.shattlebus.backend.searching.SearchHangul
 com/waffle/shattlebus/backend/model/Bus.java
  com.waffle.shattlebus.backend.model.Bus
 com/waffle/shattlebus/backend/BackendApplication.java
@@ -14,5 +14,5 @@ com/waffle/shattlebus/backend/model/Feedback.java
  com.waffle.shattlebus.backend.model.Feedback
 com/waffle/shattlebus/backend/model/Station.java
  com.waffle.shattlebus.backend.model.Station
-com/waffle/shattlebus/backend/searching/SearchHangul.java
- com.waffle.shattlebus.backend.searching.SearchHangul
+com/waffle/shattlebus/backend/controller/PostAPIController.java
+ com.waffle.shattlebus.backend.controller.PostAPIController
