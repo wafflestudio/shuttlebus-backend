@@ -90,23 +90,24 @@ public class NormalBusCrawler {
             );
         }
 
-        ////////////////////////////////////////////////////////////
-        ///////////////////operating bus////////////////////////////
-        ////////////////////////////////////////////////////////////
-        List<String> operatingBus = new ArrayList<>();
+        List<String> operBus = new ArrayList<>();
         for (int i = 0; i < len; i++) {
-            operatingBus.add(
-//                    doc.select("stationNm1").get(i).text()+"/"+
-                    doc.select("plainNo1").get(i).text() + "/" +
-//                    doc.select("stationNm2").get(i).text()+"/"+
-                            doc.select("plainNo2").get(i).text() + "/" +
-                            doc.select("nstnId1").get(i).text() + "/" + // 차선
-                            doc.select("nstnId2").get(i).text() + "/" // 차선
+            String msg = doc.select("arrmsg1").get(i).text();
+//            if (msg.equals("출발대기")) {
+//                operBus.add(
+//                        doc.select("stNm").get(i).text() + "/" +
+//                                doc.select("plainNo1").get(i).text() + "/" +
+//                                doc.select("arrmsg1").get(i).text()
+//                );
+            if (msg.equals("곧 도착")) {
+                operBus.add(
+                        doc.select("stNm").get(i).text() + "/" +
+                                doc.select("plainNo1").get(i).text() + "/" +
+                                doc.select("arrmsg1").get(i).text()
+                );
+            }
 
-            );
         }
-
-        ///////////////////////요 사이만 코딩하면 됩니다//////////////////////
 
         System.out.println(basic);
         System.out.println("##########################################3");
@@ -115,7 +116,7 @@ public class NormalBusCrawler {
         }
 
         System.out.println("##########################################3");
-        for (String v : operatingBus) {
+        for (String v : operBus) {
             System.out.println(v + "\n");
         }
     }
@@ -150,7 +151,7 @@ public class NormalBusCrawler {
 
         try {
             findStation(21278);
-            findBusRoute(100100118);
+            findBusRoute(120900008);
         } catch (Exception e) {
             e.printStackTrace();
         }
