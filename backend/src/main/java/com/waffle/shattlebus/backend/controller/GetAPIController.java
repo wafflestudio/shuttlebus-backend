@@ -1,5 +1,6 @@
 package com.waffle.shattlebus.backend.controller;
 import com.waffle.shattlebus.backend.model.*;
+import org.json.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -8,6 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.json.JSONObject;
@@ -29,32 +33,40 @@ public class GetAPIController {
 
     // 정류장 상세 - 자체 리스트
     @GetMapping("/stations/{stationid}")
-    public JSONObject getStations(@PathVariable("stationid") Long id) throws Exception{
+    public String getStations(@PathVariable("stationid") Long id) throws Exception{
 
         String path = "http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?serviceKey="
                 + key
                 + "&arsId=" + id;
 
-        JSONObject data = getJSON(path);
+        //List<List<String>> Info = BusTsvInfo.getBusTsvInfo();
+        Map<Long, List<String>> BTI = BusTsvInfo.getBTIMap();
+        List<String> Info = BTI.get(id);
+        JSONObject data = (JSONObject) getJSON(path).get("msgBody");
         JSONObject response = new JSONObject();
 
         response.put("id", id.toString());
-        response.put("direction", data.get("nxtStn"));
-        // name은 리스트에서 받아오기
+        response.put("name", Info.get(0));
+        response.put("direction", Info.get(1));
 
-        return null;
+        // 버스 리스트 받아오기
+        JSONArray busList = data.getJSONArray("itemList"); // 여기서 정보 추출 필요
+        JSONArray ourList = new JSONArray();
+
+        response.put("buses", busList);
+        // arrmsg1, rtNm, busRouteId -> 따로 파싱을 해야하나 어떻게 해야하나
+
+        return response.toString();
     }
 
     // 버스 상세 - 자체 리스트
     @GetMapping("/buses/{busid}")
-    public String getMultiParameters(@PathVariable("busid") Long id) throws Exception {
-
-        // 버스 db 사용 여부 ??
-
+    public JSONObject getBuses(@PathVariable("busid") String id) throws Exception {
+        
         String path = "http://ws.bus.go.kr/api/rest/busRouteInfo/getRoutePath?serviceKey="
         + key + "&busRouteId=" + id;
 
-        return getJSON(path).toString();
+        return getJSON(path);
     }
 
     // 정류장 검색
@@ -98,7 +110,7 @@ public class GetAPIController {
             response.append(inputLine);
         }
         in.close(); // print result
-        return XML.toJSONObject(response.toString());
+        return (JSONObject) (XML.toJSONObject(response.toString())).get("ServiceResult");
     }
 }
 
