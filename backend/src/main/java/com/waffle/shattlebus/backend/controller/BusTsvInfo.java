@@ -1,6 +1,7 @@
 package com.waffle.shattlebus.backend.controller;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
         /*
@@ -31,7 +32,7 @@ public class BusTsvInfo {
         List<List<String>> busInfoList = new ArrayList<>();
 
         try {
-            String tsvPath = "./shuttlebus-backend/backend/src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo_tsv";
+            String tsvPath = "src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo.tsv";
 
             BufferedReader br = new BufferedReader(new FileReader(tsvPath));
             String line = "";
@@ -43,12 +44,6 @@ public class BusTsvInfo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (int i=0; i<busInfoList.size(); i++) {
-            for (String v : busInfoList.get(i)) {
-                System.out.print(v+" , ");
-            }
-            System.out.println("/");
-        }
      return busInfoList;
     } // 이중리스트로 넣어놓음.
 
@@ -57,7 +52,7 @@ public class BusTsvInfo {
         Map<Long, List<String>> busInfoList = new HashMap<>();
 
         try {
-            String tsvPath = "C:/Users/wlgur/Documents/GitHub/shuttlebus-backend/backend/src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo_tsv";
+            String tsvPath = "src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo.tsv";
 
             BufferedReader br = new BufferedReader(new FileReader(tsvPath));
             String line = "";
@@ -74,7 +69,6 @@ public class BusTsvInfo {
 
         return busInfoList;
     } // 이중리스트로 넣어놓음.
-
 }
     
 

@@ -88,7 +88,7 @@ public class SearchHangul {
      * @param keyword
      * @return boolean
      */
-    static boolean compWord(String word, String keyword){
+    public static int compWord(String word, String keyword){
         int wlen = word.length(), kwlen = keyword.length();
         for(int i = 0; i <= (wlen - kwlen); i++){
             boolean flag = true;
@@ -96,13 +96,8 @@ public class SearchHangul {
                 char a = word.charAt(i+j);
                 if (keyword.charAt(j)>a || a>findEndChar(keyword.charAt(j))) flag=false;
             }
-            if(flag) return true;
+            if(flag) return i+kwlen;
         }
-        return false;
-    }
-
-    // for testing
-    public static void main(String[] args){
-        System.out.println(compWord("나는빡빡이다", "나느빡빠"));
+        return -1;
     }
 }
