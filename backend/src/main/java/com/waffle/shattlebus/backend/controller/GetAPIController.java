@@ -52,8 +52,16 @@ public class GetAPIController {
         // 버스 리스트 받아오기
         JSONArray busList = data.getJSONArray("itemList"); // 여기서 정보 추출 필요
         JSONArray ourList = new JSONArray();
+        for(int i=0; i<busList.length(); i++){
+            JSONObject a = (JSONObject) busList.get(i);
+            JSONObject n = new JSONObject();
+            n.put( "name", a.get("rtNm").toString());
+            n.put( "id", a.get("busRouteId").toString());
+            n.put( "arrival_time", a.get("arrmsg1").toString());
+            ourList.put(n);
+        }
 
-        response.put("buses", busList);
+        response.put("buses", ourList);
         // arrmsg1, rtNm, busRouteId -> 따로 파싱을 해야하나 어떻게 해야하나
 
         return response.toString();
@@ -65,6 +73,31 @@ public class GetAPIController {
         
         String path = "http://ws.bus.go.kr/api/rest/busRouteInfo/getRoutePath?serviceKey="
         + key + "&busRouteId=" + id;
+
+        //List<List<String>> Info = BusTsvInfo.getBusTsvInfo();
+        Map<Long, List<String>> BTI = BusTsvInfo.getBTIMap();
+        List<String> Info = BTI.get(id);
+        JSONObject data = (JSONObject) getJSON(path).get("msgBody");
+        JSONObject response = new JSONObject();
+
+        response.put("id", id.toString());
+        response.put("name", Info.get(0));
+        response.put("direction", Info.get(1));
+
+        // 버스 리스트 받아오기
+        JSONArray busList = data.getJSONArray("itemList"); // 여기서 정보 추출 필요
+        JSONArray ourList = new JSONArray();
+        for(int i=0; i<busList.length(); i++){
+            JSONObject a = (JSONObject) busList.get(i);
+            JSONObject n = new JSONObject();
+            n.put( "name", a.get("rtNm").toString());
+            n.put( "id", a.get("busRouteId").toString());
+            n.put( "arrival_time", a.get("arrmsg1").toString());
+            ourList.put(n);
+        }
+
+        response.put("buses", ourList);
+        // arrmsg1, rtNm, busRouteId -> 따로 파싱을 해야하나 어떻게 해야하나
 
         return getJSON(path);
     }
