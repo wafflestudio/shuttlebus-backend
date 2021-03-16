@@ -1,5 +1,7 @@
 package com.waffle.shattlebus.backend.searching;
 
+import java.security.Key;
+
 public class SearchHangul {
     private static final char HANGUL_BEGIN_UNICODE = 44032; // 가
     private static final char HANGUL_LAST_UNICODE = 55203; // 힣
@@ -48,14 +50,12 @@ public class SearchHangul {
     }
 
     /**
-     * 단어 검색시 범위의 EndPoint를 찾음
+     * 문자 하나의 검색 범위를 찾음
      *
-     * @param keyword 단어 하나
-     * @return endKeyword
+     * @param targetChar char 하나
+     * @return endChar
      */
-    static String findEndKeyword(String keyword){
-        // 마지막 글자
-        char targetChar = keyword.charAt(keyword.length() - 1);
+    static char findEndChar(char targetChar){
         char endChar = '0';
 
         // 입력값의 끝 문자가 ㄱ...ㅎ 인 경우
@@ -78,20 +78,26 @@ public class SearchHangul {
                 }
             }
         }
-        String endKeyword = keyword.substring(0, keyword.length() - 1) + endChar;
-
-        // System.out.println(keyword + " to the end: " + endKeyword);
-
-        return endKeyword;
+        return endChar;
     }
 
-    // for testing
-    public static void main(String[] args){
-        String a = "곰나담랑밍";
-        String b = "가나다라마";
-        String c = "갛낳닿랗맣";
-        System.out.println(a.compareTo(b)+" "+a.compareTo(c));
-        System.out.println(findEndKeyword("가글"));
-        System.out.println(findEndKeyword("가ㅇ"));
+    /**
+     * word에 keyword가 속하는지 검사
+     *
+     * @param word
+     * @param keyword
+     * @return boolean
+     */
+    public static int compWord(String word, String keyword){
+        int wlen = word.length(), kwlen = keyword.length();
+        for(int i = 0; i <= (wlen - kwlen); i++){
+            boolean flag = true;
+            for(int j = 0; j < kwlen; j++) {
+                char a = word.charAt(i+j);
+                if (keyword.charAt(j)>a || a>findEndChar(keyword.charAt(j))) flag=false;
+            }
+            if(flag) return i+kwlen;
+        }
+        return -1;
     }
 }
