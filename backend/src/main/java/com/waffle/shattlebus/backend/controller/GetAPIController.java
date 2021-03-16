@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -16,6 +17,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.json.JSONObject;
 import org.json.XML;
+
+import static com.waffle.shattlebus.backend.controller.BusTsvInfo.getBusTsvInfo;
+import static com.waffle.shattlebus.backend.searching.SearchHangul.compWord;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -71,20 +75,47 @@ public class GetAPIController {
 
     // 정류장 검색
     @GetMapping("/stations") 
-    public String getStations(@RequestBody String station){
+    public String getStations(@RequestParam(value = "query", required = false) String query){
+        String[] queries = query.split(" ");
 
         // 검색 처리
+        List<List<String>> rev = getBusTsvInfo();
+        Map<String, List<String>> result = new HashMap<>();
+        for(List<String> station_info : rev) {
+            String station_name = station_info.get(1);
+            boolean flag = true;
+            int st = 0;
+            for (int i = 0; i < queries.length; i++) {
+                st = compWord(station_name.substring(st), queries[i]);
+                if (st == -1) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) result.put(station_info.get(0), station_info.subList(1, 4));
+        }
 
-        return "정류장 이름: " + station;
+        JSONObject response = new JSONObject();
+        JSONArray jArray = new JSONArray();
+        for(String key : result.keySet()){
+            JSONObject sObject = new JSONObject();
+            sObject.put("id", key);
+            sObject.put("name", result.get(key).get(0));
+            sObject.put("to", result.get(key).get(1));
+            sObject.put("dir", Integer.parseInt(result.get(key).get(2)));
+            jArray.put(sObject);
+        }
+        response.put("result", jArray);
+        return response.toString();
     }
 
     // 통합 검색
     @GetMapping("/find")
-    public String getData(@RequestBody String data){
+    public String getData(@RequestParam(value = "query", required = false) String query){
 
         // 검색 처리
 
-        return "정류장 또는 버스 이름: " + data;
+        return "정류장 또는 버스 이름: " + query;
     }
 
     //길찾기
