@@ -108,8 +108,9 @@ public class GetAPIController {
             stations.put(eachStop);
 
             String arrMsg = element.get("arrmsg1").toString();
-            if(arrMsg.contains("0번째") || arrMsg.contains("곧 도착")){  // ************* note
+            if( (arrMsg.contains("0번째") && !arrMsg.contains("10번째")) || arrMsg.contains("곧 도착")){  // ************* note
                 JSONObject bus = new JSONObject();
+                bus.put("station_id", element.get("stId"));
                 bus.put("arriving_at", element.get("stNm"));
                 bus.put("plateNo", element.get("plainNo1"));
                 operating_buses.put(bus);
