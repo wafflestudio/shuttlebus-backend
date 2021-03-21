@@ -32,9 +32,8 @@ public class BusTsvInfo {
         List<List<String>> busInfoList = new ArrayList<>();
 
         try {
-            String tsvPath = "src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo.tsv";
-
-            BufferedReader br = new BufferedReader(new FileReader(tsvPath));
+            InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             String line = "";
             while((line = br.readLine())!=null) {
                 String[] eachLineSplit = line.split("\t");
@@ -52,9 +51,8 @@ public class BusTsvInfo {
         Map<Long, List<String>> busInfoList = new HashMap<>();
 
         try {
-            String tsvPath = "src/main/java/com/waffle/shattlebus/backend/controller/BusTsvInfo.tsv";
-
-            BufferedReader br = new BufferedReader(new FileReader(tsvPath));
+            InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             String line = "";
             while((line = br.readLine())!=null) {
                 String[] eachLineSplit = line.split("\t");

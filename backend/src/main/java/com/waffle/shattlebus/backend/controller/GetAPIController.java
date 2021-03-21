@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -169,7 +170,7 @@ public class GetAPIController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public @ResponseBody
+    public
     ResponseEntity<Object> NotFoundMessage(NotFoundException e){
 
         JSONObject response = new JSONObject();
@@ -267,9 +268,8 @@ public class GetAPIController {
         List<List<String>> buses = new ArrayList<>();
 
         try {
-            String path = "src/main/java/com/waffle/shattlebus/backend/controller/Buses.tsv";
-
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            InputStream inputStream = GetAPIController.class.getResourceAsStream("/Buses.tsv");
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             String line = "";
             while((line = br.readLine())!=null) {
                 String[] eachLineSplit = line.split("\t");
