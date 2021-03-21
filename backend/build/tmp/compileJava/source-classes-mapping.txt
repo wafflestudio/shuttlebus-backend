@@ -16,5 +16,7 @@ com/waffle/shattlebus/backend/model/Feedback.java
  com.waffle.shattlebus.backend.model.Feedback
 com/waffle/shattlebus/backend/searching/SearchHangul.java
  com.waffle.shattlebus.backend.searching.SearchHangul
+com/waffle/shattlebus/backend/Exception/NotFoundException.java
+ com.waffle.shattlebus.backend.Exception.NotFoundException
 com/waffle/shattlebus/backend/controller/GetAPIController.java
  com.waffle.shattlebus.backend.controller.GetAPIController

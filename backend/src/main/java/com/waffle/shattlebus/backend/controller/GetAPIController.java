@@ -1,6 +1,8 @@
 package com.waffle.shattlebus.backend.controller;
+import com.waffle.shattlebus.backend.Exception.NotFoundException;
 import com.waffle.shattlebus.backend.model.*;
 import org.json.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -33,7 +35,7 @@ public class GetAPIController {
     List<Station> stationList;
     List<Bus> busList;
 
-    //                                  정류장 상세
+    //                                 1. 정류장 상세
     @GetMapping("/stations/{stationid}")
     public String getStations(@PathVariable("stationid") Long id) throws Exception{
 
@@ -48,7 +50,9 @@ public class GetAPIController {
 
         try {
             List<String> Info = BTI.get(id);
-            JSONObject data = (JSONObject) getJSON(path).get("msgBody");
+            JSONObject apiResponse = getJSON(path);
+            if(apiResponse.getJSONObject("msgHeader").getInt("headerCd")==4) throw new NotFoundException("st");
+            JSONObject data = apiResponse.getJSONObject("msgBody");
             JSONObject response = new JSONObject();
 
             response.put("id", id.toString());
@@ -75,14 +79,13 @@ public class GetAPIController {
 
             return response.toString();
         }
-        catch(Exception e){
-
-            // 존재하지 않는 버스일 경우
-            throw e;
+        catch(NullPointerException e){
+            // 존재하지 않는 버스일 경우 NullPointerException
+            throw new NotFoundException("st");
         }
     }
 
-    //                                  버스 상세
+    //                                2. 버스 상세
     @GetMapping("/buses/{busid}")
     public String getBuses(@PathVariable("busid") String id) throws Exception {
         
@@ -90,7 +93,9 @@ public class GetAPIController {
         + key + "&busRouteId=" + id;
 
         // 일단 못찾는 경우는 배제하도록 하자
-        JSONObject data = (JSONObject) getJSON(path).get("msgBody");
+        JSONObject response = getJSON(path);
+        if(response.getJSONObject("msgHeader").getInt("headerCd")==4) throw new NotFoundException("bus");
+        JSONObject data = response.getJSONObject("msgBody");
         JSONArray  datalist = data.getJSONArray("itemList");
 
         JSONArray  stations = new JSONArray();
@@ -132,7 +137,7 @@ public class GetAPIController {
         return result.toString();
     }
 
-    //                              정류장 검색 by 승한
+    //                             3. 정류장 검색 by 승한
     @GetMapping("/stations") 
     public String getStations(@RequestParam(value = "query", required = false) String query){
 
@@ -142,7 +147,7 @@ public class GetAPIController {
         return response.toString();
     }
 
-    //                              통합 검색
+    //                             4. 통합 검색
     @GetMapping("/find")
     public String getData(@RequestParam(value = "query", required = false) String query){
 
@@ -153,8 +158,7 @@ public class GetAPIController {
         return response.toString();
     }
 
-    //길찾기
-    //********************************** v1에서는 만들지 않기로 함 **********************************************
+    //길찾기 - 미구현
     @GetMapping("/findpath/")
     public String getListPath(@RequestParam String from, @RequestParam String to) {
 
@@ -164,6 +168,28 @@ public class GetAPIController {
 
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public @ResponseBody
+    ResponseEntity<Object> NotFoundMessage(NotFoundException e){
+
+        JSONObject response = new JSONObject();
+        int errCd = 0;
+        String msg = "";
+
+        if(e.getMessage().equals("st")){
+            errCd = 10001;
+            msg = "invalid station id";
+        }
+        else if(e.getMessage().equals("bus")){
+            errCd = 20001;
+            msg = "invalid bus id";
+        }
+        response.put("errorcode", errCd);
+        response.put("message", msg);
+        return ResponseEntity.badRequest().body(response.toString());
+    }
+
+    //부차적인 methods
     public JSONArray search_SH(String query, boolean isStation){
 
         String[] queries = query.split(" ");
@@ -255,6 +281,7 @@ public class GetAPIController {
         }
         return buses;
     }
+
 }
 
 
