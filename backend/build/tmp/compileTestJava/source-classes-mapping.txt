@@ -1,2 +1,0 @@
-com/waffle/shattlebus/backend/BackendApplicationTests.java
- com.waffle.shattlebus.backend.BackendApplicationTests
