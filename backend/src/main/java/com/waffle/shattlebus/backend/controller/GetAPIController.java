@@ -36,7 +36,7 @@ public class GetAPIController {
     List<Station> stationList;
     List<Bus> busList;
 
-    //                                 1. 정류장 상세
+
     @GetMapping("/stations/{stationid}")
     public String getStations(@PathVariable("stationid") Long id) throws Exception{
 
