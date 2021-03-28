@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation files('libs/mail-1.4.7.jar')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'javax.mail', name: 'mail', version: '1.4.7'
     compileOnly 'org.projectlombok:lombok'
