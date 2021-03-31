@@ -15,7 +15,7 @@ import java.util.Properties;
 public class PostAPIController {
     static int emailId = 0;
 
-    @PostMapping(path = "/feedback/")
+    @PostMapping(path = "/feedback")
     public Feedback postRequest(@RequestBody Feedback feedback) {
         gmailSend(feedback.getContent());
         return feedback;
@@ -56,9 +56,6 @@ public class PostAPIController {
             // send the message
             Transport.send(message);
 
-        } catch (AddressException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (MessagingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

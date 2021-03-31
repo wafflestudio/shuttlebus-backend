@@ -33,13 +33,7 @@ public class BusTsvInfo {
 
         try {
             InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            String line = "";
-            while((line = br.readLine())!=null) {
-                String[] eachLineSplit = line.split("\t");
-                busInfoList.add(Arrays.asList(eachLineSplit));
-            }
-            br.close();
+            GetAPIController.read(busInfoList, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }

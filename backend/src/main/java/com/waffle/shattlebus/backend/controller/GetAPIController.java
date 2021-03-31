@@ -5,10 +5,7 @@ import org.json.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,9 +30,6 @@ public class GetAPIController {
     String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test>test value</test><test2>test2 value</test2>";
     JSONObject jsonObject = XML.toJSONObject(xmlString);
 
-    List<Station> stationList;
-    List<Bus> busList;
-
 
     @GetMapping("/stations/{stationid}")
     public String getStations(@PathVariable("stationid") Long id) throws Exception{
@@ -58,7 +52,7 @@ public class GetAPIController {
 
             response.put("id", id.toString());
             response.put("name", Info.get(0));
-            response.put("direction", Info.get(1));
+            response.put("direction_rep", Info.get(1));
 
             // ***시내*** 버스 리스트 받아오기
             JSONArray busList = data.getJSONArray("itemList"); // 여기서 정보 추출 필요
@@ -66,6 +60,7 @@ public class GetAPIController {
             for (int i = 0; i < busList.length(); i++) {
                 JSONObject a = (JSONObject) busList.get(i);
                 JSONObject n = new JSONObject();
+                n.put("direction", a.get("nxtStn").toString());
                 n.put("name", a.get("rtNm").toString());
                 n.put("id", a.get("busRouteId").toString());
                 n.put("arrival_time", a.get("arrmsg1").toString());
@@ -86,7 +81,7 @@ public class GetAPIController {
         }
     }
 
-    //                                2. 버스 상세
+    //                              2. 버스 상세
     @GetMapping("/buses/{busid}")
     public String getBuses(@PathVariable("busid") String id) throws Exception {
         
@@ -269,17 +264,21 @@ public class GetAPIController {
 
         try {
             InputStream inputStream = GetAPIController.class.getResourceAsStream("/Buses.tsv");
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            String line = "";
-            while((line = br.readLine())!=null) {
-                String[] eachLineSplit = line.split("\t");
-                buses.add(Arrays.asList(eachLineSplit));
-            }
-            br.close();
+            read(buses, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return buses;
+    }
+
+    static void read(List<List<String>> buses, InputStream inputStream) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        String line = "";
+        while((line = br.readLine())!=null) {
+            String[] eachLineSplit = line.split("\t");
+            buses.add(Arrays.asList(eachLineSplit));
+        }
+        br.close();
     }
 
 }
