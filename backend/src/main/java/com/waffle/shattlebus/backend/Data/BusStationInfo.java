@@ -1,7 +1,8 @@
-package com.waffle.shattlebus.backend.controller;
+package com.waffle.shattlebus.backend.Data;
+
+import com.waffle.shattlebus.backend.Controller.GetAPIController;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.*;
 
         /*
@@ -25,24 +26,37 @@ import java.util.*;
          */
 
 
-public class BusTsvInfo {
+public class BusStationInfo {
 
-    static List<List<String>> getBusTsvInfo() {
+    public static List<List<String>> getBuses() {
+
+        List<List<String>> buses = new ArrayList<>();
+
+        try {
+            InputStream inputStream = GetAPIController.class.getResourceAsStream("/Buses.tsv");
+            read(buses, inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return buses;
+    }
+
+    public static List<List<String>> getStations() {
 
         List<List<String>> busInfoList = new ArrayList<>();
 
         try {
-            InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
-            GetAPIController.read(busInfoList, inputStream);
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/BusTsvInfo.tsv");
+            read(busInfoList, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
      return busInfoList;
     } // 이중리스트로 넣어놓음.
 
-    static Map<Long, List<String>> getBTIMap() {
+    public static Map<String, List<String>> getStationsAsMap() {
 
-        Map<Long, List<String>> busInfoList = new HashMap<>();
+        Map<String, List<String>> busInfoList = new HashMap<>();
 
         try {
             InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
@@ -52,7 +66,7 @@ public class BusTsvInfo {
                 String[] eachLineSplit = line.split("\t");
                 // 한줄씩 처리 ㄱㄱ
                 List<String> array = Arrays.asList(eachLineSplit);
-                busInfoList.put( (long) Integer.parseInt(array.get(0)), array.subList(1,5));
+                busInfoList.put( array.get(0), array.subList(1,5));
             }
             br.close();
         } catch (Exception e) {
@@ -61,6 +75,16 @@ public class BusTsvInfo {
 
         return busInfoList;
     } // 이중리스트로 넣어놓음.
+
+    static void read(List<List<String>> buses, InputStream inputStream) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        String line = "";
+        while((line = br.readLine())!=null) {
+            String[] eachLineSplit = line.split("\t");
+            buses.add(Arrays.asList(eachLineSplit));
+        }
+        br.close();
+    }
 }
     
 
