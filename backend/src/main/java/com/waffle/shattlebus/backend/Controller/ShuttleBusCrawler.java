@@ -1,4 +1,4 @@
-package com.waffle.shattlebus.backend.controller;
+package com.waffle.shattlebus.backend.Controller;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

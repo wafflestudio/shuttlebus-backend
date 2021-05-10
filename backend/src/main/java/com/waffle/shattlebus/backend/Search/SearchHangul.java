@@ -1,7 +1,4 @@
-package com.waffle.shattlebus.backend.searching;
-
-import java.security.Key;
-import java.util.Arrays;
+package com.waffle.shattlebus.backend.Search;
 
 public class SearchHangul {
     private static final char HANGUL_BEGIN_UNICODE = 44032; // 가
