@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,78 +106,86 @@ public class PublicAPI {
         return result.toString();
     }
 
-    public static String findStations(String query){
+    public static String findStations(String query, String tag){
 
         JSONObject response = new JSONObject();
-        response.put("result", search_SH(query, true));
+        response.put("result", search_SH(query, tag, true));
 
         return response.toString();
     }
 
-    public static String getData(String query){
+    public static String getData(String query, String tag){
 
-        JSONArray list = new JSONArray();
-        list = search_SH(query, true);
-        for( Object o: search_SH(query, false)){
-            list.put(o);
-        }
+        JSONObject response = new JSONObject();
+        JSONArray station_list = new JSONArray();
+        JSONArray bus_list = new JSONArray();
 
-        return list.toString();
+        station_list = search_SH(query, tag, true);
+        bus_list = search_SH(query, tag, false);
+
+        response.put("station_result", station_list);
+        response.put("bus_result", bus_list);
+
+        return response.toString();
     }
 
-    // 검색 기능 by 승한
-    private static JSONArray search_SH(String query, boolean isStation){
-
-        String[] queries = query.split(" ");
-
+    // 검색 기능
+    private static JSONArray search_SH(String query, String tag, boolean isStation){
         // 검색 처리
+        if(tag != null && !isStation)
+            return new JSONArray();
 
-        List<List<String>> rev;
+        List<ArrayList<String>> rev;
         Map<String, List<String>> result_st = new HashMap<>();
-        Map<String, String> result_bus = new HashMap<>();
+        Map<String, List<String>> result_bus = new HashMap<>();
 
         if(isStation)
             rev = BusStationInfo.getStations();
         else
             rev = BusStationInfo.getBuses();
 
-
         for (List<String> info : rev) {
             String name = info.get(1);
             boolean flag = true;
             int st = 0;
-            for (String s : queries) {
-                st = compWord(name.substring(st), s);
-                if (st == -1) {
-                    flag = false;
-                    break;
+
+            if(query != null) {
+                String[] queries = query.split(" ");
+                for (String s : queries) {
+                    st = compWord(name.substring(st), s);
+                    if (st == -1) {
+                        flag = false;
+                        break;
+                    }
                 }
             }
+            if(tag != null)
+                flag &= (info.get(6).compareTo(tag) == 0);
+
             if (flag) {
                 if(isStation) result_st.put(info.get(0), info.subList(1, 4));
-                else result_bus.put(info.get(1), info.get(0));
+                else result_bus.put(info.get(0), info.subList(1, 3));
             }
         }
-
 
         JSONArray jArray = new JSONArray();
         if(isStation) {
             for (String key : result_st.keySet()) {
                 JSONObject sObject = new JSONObject();
-                sObject.put("type", "station");
                 sObject.put("id", key);
                 sObject.put("name", result_st.get(key).get(0));
                 sObject.put("to", result_st.get(key).get(1));
-                sObject.put("dir", Integer.parseInt(result_st.get(key).get(2)));
+                int type = Integer.parseInt(result_st.get(key).get(2));
+                sObject.put("type", type == 4 ? 3 : type);
                 jArray.put(sObject);
             }
         }
         else{
             for (String key : result_bus.keySet()) {
                 JSONObject sObject = new JSONObject();
-                sObject.put("type", "bus");
-                sObject.put("id", result_bus.get(key));
-                sObject.put("name", key);
+                sObject.put("id", key);
+                sObject.put("name", result_bus.get(key).get(0));
+                sObject.put("type", result_bus.get(key).get(1));
                 jArray.put(sObject);
             }
         }

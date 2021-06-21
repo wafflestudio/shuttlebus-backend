@@ -28,9 +28,9 @@ import java.util.*;
 
 public class BusStationInfo {
 
-    public static List<List<String>> getBuses() {
+    public static List<ArrayList<String>> getBuses() {
 
-        List<List<String>> buses = new ArrayList<>();
+        List<ArrayList<String>> buses = new ArrayList<>();
 
         try {
             InputStream inputStream = GetAPIController.class.getResourceAsStream("/Buses.tsv");
@@ -41,9 +41,9 @@ public class BusStationInfo {
         return buses;
     }
 
-    public static List<List<String>> getStations() {
+    public static List<ArrayList<String>> getStations() {
 
-        List<List<String>> busInfoList = new ArrayList<>();
+        List<ArrayList<String>> busInfoList = new ArrayList<>();
 
         try {
             InputStream inputStream = BusStationInfo.class.getResourceAsStream("/BusTsvInfo.tsv");
@@ -51,7 +51,29 @@ public class BusStationInfo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-     return busInfoList;
+
+        List<ArrayList<String>> tagInfoList = new ArrayList<>();
+
+        try {
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/StationTagsInfo.tsv");
+            read(tagInfoList, inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (List<String> info : busInfoList) {
+            boolean flag = false;
+            for (List<String> tags : tagInfoList) {
+                if(info.get(0).compareTo(tags.get(2)) == 0) {
+                    info.add(tags.get(0));
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag) info.add("");
+        }
+
+        return busInfoList;
     } // 이중리스트로 넣어놓음.
 
     public static Map<String, List<String>> getStationsAsMap() {
@@ -76,12 +98,12 @@ public class BusStationInfo {
         return busInfoList;
     } // 이중리스트로 넣어놓음.
 
-    static void read(List<List<String>> buses, InputStream inputStream) throws IOException {
+    static void read(List<ArrayList<String>> buses, InputStream inputStream) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         String line = "";
         while((line = br.readLine())!=null) {
             String[] eachLineSplit = line.split("\t");
-            buses.add(Arrays.asList(eachLineSplit));
+            buses.add(new ArrayList<>(Arrays.asList(eachLineSplit)));
         }
         br.close();
     }

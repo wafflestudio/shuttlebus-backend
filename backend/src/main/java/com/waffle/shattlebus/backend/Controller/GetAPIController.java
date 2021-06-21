@@ -50,16 +50,18 @@ public class GetAPIController {
 
     //                             3. 정류장 검색
     @GetMapping("/stations") 
-    public String findStations(@RequestParam(value = "query", required = false) String query){
+    public String findStations(@RequestParam(value = "query", required = false) String query,
+                               @RequestParam(value = "tag", required = false) String tag){
 
-        return PublicAPI.findStations(query);
+        return PublicAPI.findStations(query, tag);
     }
 
     //                             4. 통합 검색
     @GetMapping("/find")
-    public String getData(@RequestParam(value = "query", required = false) String query){
+    public String getData(@RequestParam(value = "query", required = false) String query,
+                          @RequestParam(value = "tag", required = false) String tag){
 
-        return PublicAPI.getData(query);
+        return PublicAPI.getData(query, tag);
     }
 
     //              `              5. 길찾기 - v1에서 미구현
