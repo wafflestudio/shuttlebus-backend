@@ -2,6 +2,7 @@ package com.waffle.shattlebus.backend.Service;
 import com.waffle.shattlebus.backend.Data.BusStationInfo;
 import com.waffle.shattlebus.backend.Exception.NotFoundException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,13 @@ public class PublicAPI {
             response.put("name", Info.get(0));
             response.put("direction_rep", Info.get(1));
 
-            JSONArray busList = data.getJSONArray("itemList");
+            JSONArray busList = new JSONArray();
+            try {
+                data.getJSONArray("itemList");
+            } catch (JSONException e){
+                JSONObject item = data.getJSONObject("itemList");
+                busList.put(item);
+            }
             JSONArray ourList = new JSONArray();
             for (int i = 0; i < busList.length(); i++) {
                 JSONObject a = (JSONObject) busList.get(i);
