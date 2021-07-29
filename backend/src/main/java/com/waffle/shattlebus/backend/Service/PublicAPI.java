@@ -42,11 +42,15 @@ public class PublicAPI {
 
             JSONArray busList = new JSONArray();
             try {
-                data.getJSONArray("itemList");
+                busList = data.getJSONArray("itemList");
             } catch (JSONException e){
                 JSONObject item = data.getJSONObject("itemList");
                 busList.put(item);
             }
+
+            response.put("longitude", ((JSONObject)busList.get(0)).get("gpsX").toString());
+            response.put("latitude", ((JSONObject)busList.get(0)).get("gpsY").toString());
+
             JSONArray ourList = new JSONArray();
             for (int i = 0; i < busList.length(); i++) {
                 JSONObject a = (JSONObject) busList.get(i);
