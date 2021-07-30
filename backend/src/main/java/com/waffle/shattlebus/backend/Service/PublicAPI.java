@@ -76,7 +76,7 @@ public class PublicAPI {
         if (id.equals("100100250")) return "서울대입구역,제2공학관";
         if (id.equals("100100251")) return "서울대입구역,제2공학관";
         if (id.equals("100100253")) return "신림2동차고지,제2공학관";
-        if (id.equals("120900008")) return "낙성대역, 제2공학관";
+        if (id.equals("120900008")) return "낙성대역,제2공학관";
         return "";
     }
 
