@@ -71,6 +71,17 @@ public class PublicAPI {
         }
     }
 
+    // 시작, 종점.
+    private static String getRange(String id) {
+        if (id.equals("100100250")) return "서울대입구역,제2공학관";
+        if (id.equals("100100251")) return "서울대입구역,제2공학관";
+        if (id.equals("100100253")) return "신림2동차고지,제2공학관";
+        if (id.equals("120900008")) return "낙성대역, 제2공학관";
+        return "";
+    }
+
+
+
     public static String getBuses(String id, String path) throws Exception {
 
         JSONObject response = PublicAPI.getJSON(path);
@@ -113,6 +124,9 @@ public class PublicAPI {
 
         result.put("operating_buses", operating_buses);
         result.put("stations", stations);
+
+        String range = getRange(id);
+        result.put("range", range);
 
         return result.toString();
     }
