@@ -210,7 +210,7 @@ public class PublicAPI {
                 JSONObject sObject = new JSONObject();
                 sObject.put("id", key);
                 sObject.put("name", result_bus.get(key).get(0));
-                sObject.put("type", result_bus.get(key).get(1));
+                sObject.put("type", Integer.parseInt(result_bus.get(key).get(1)));
                 jArray.put(sObject);
             }
         }
