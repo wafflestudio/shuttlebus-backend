@@ -1,5 +1,7 @@
 package com.waffle.shattlebus.backend.Search;
 
+import static java.lang.Character.toUpperCase;
+
 public class SearchHangul {
     private static final char HANGUL_BEGIN_UNICODE = 44032; // 가
     private static final char HANGUL_LAST_UNICODE = 55203; // 힣
@@ -99,7 +101,7 @@ public class SearchHangul {
             for(int j = 0; j < kwlen; j++) {
                 char a = word.charAt(i+j), b = keyword.charAt(j);
                 if (isHangul(a) && isHangul(b) && (findBeginChar(b)>a || a>findEndChar(b))) flag=false;
-                if ((!isHangul(a) || !isHangul(b)) && a!=b ) flag = false;
+                if ((!isHangul(a) || !isHangul(b)) && toUpperCase(a)!=toUpperCase(b) ) flag = false;
             }
             if(flag) return i+kwlen;
         }
