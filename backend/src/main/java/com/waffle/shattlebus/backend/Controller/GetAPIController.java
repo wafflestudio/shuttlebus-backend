@@ -38,7 +38,7 @@ public class GetAPIController {
         return PublicAPI.getStations(id, path);
     }
 
-    //                              2. 버스 상세
+    //                              2-1. 버스 상세
     @GetMapping("/buses/{busid}")
     public String getBuses(@PathVariable("busid") String id) throws Exception {
 
@@ -46,6 +46,14 @@ public class GetAPIController {
                 + key + "&busRouteId=" + id;
 
         return PublicAPI.getBuses(id, path);
+    }
+
+    //                              2-2. 셔틀버스 상세
+    @GetMapping("/shuttlebuses/{busid}")
+    public String getShuttlebuses(@PathVariable("busid") String id) throws Exception {
+
+        //return PublicAPI.getShuttleBuses(id, path);
+        return "TODO";
     }
 
     //                             3. 정류장 검색
