@@ -41,6 +41,19 @@ public class BusStationInfo {
         return buses;
     }
 
+    public static List<ArrayList<String>> getShuttleBuses() {
+
+        List<ArrayList<String>> buses = new ArrayList<>();
+
+        try {
+            InputStream inputStream = GetAPIController.class.getResourceAsStream("/shuttleInfo.tsv");
+            read(buses, inputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return buses;
+    }
+
     public static List<ArrayList<String>> getStations() {
 
         List<ArrayList<String>> busInfoList = new ArrayList<>();
