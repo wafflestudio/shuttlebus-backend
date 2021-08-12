@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.print.attribute.standard.JobName;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -115,6 +116,33 @@ public class PublicAPI {
         result.put("stations", stations);
 
         return result.toString();
+    }
+    public static String getShuttleBuses(String id) throws Exception {
+        List<ArrayList<String>> shuttle = BusStationInfo.getShuttleBuses();
+        for(List<String> info : shuttle){
+            for(int i=0; i<info.size(); i++){
+                System.out.print(info.get(i) + "/");
+            }
+            System.out.println();
+            if(info.get(0).compareTo(id) != 0) continue;
+
+            JSONObject result = new JSONObject();
+            result.put("id", id);
+            result.put("name", info.get(1));
+            result.put("is_shuttle", true);
+            result.put("operating_section", info.get(2));
+            result.put("time_required", info.get(3).compareTo(" ") == 0 ? null : info.get(3));
+            JSONArray dispatch_interval = new JSONArray();
+            for(int i=4; i<info.size(); i+=2){
+                JSONObject ele = new JSONObject();
+                ele.put("time", info.get(i));
+                ele.put("interval", info.get(i+1));
+                dispatch_interval.put(ele);
+            }
+            result.put("dispatch_interval", dispatch_interval);
+            return result.toString();
+        }
+        throw new NotFoundException("bus");
     }
 
     public static String findStations(String query, String tag){

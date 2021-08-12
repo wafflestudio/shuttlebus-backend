@@ -52,8 +52,7 @@ public class GetAPIController {
     @GetMapping("/shuttlebuses/{busid}")
     public String getShuttlebuses(@PathVariable("busid") String id) throws Exception {
 
-        //return PublicAPI.getShuttleBuses(id, path);
-        return "TODO";
+        return PublicAPI.getShuttleBuses(id);
     }
 
     //                             3. 정류장 검색
