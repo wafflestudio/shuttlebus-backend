@@ -99,7 +99,7 @@ public class PublicAPI {
             JSONObject element = (JSONObject) datalist.get(i);
 
             JSONObject eachStop = new JSONObject();
-            eachStop.put("id", element.get("stId"));
+            eachStop.put("id", element.get("arsId"));
             eachStop.put("name", element.get("stNm"));
             eachStop.put("idx", element.get("staOrd"));
             stations.put(eachStop);
@@ -107,7 +107,7 @@ public class PublicAPI {
             String arrMsg = element.get("arrmsg1").toString();
             if( (arrMsg.contains("0번째") && !arrMsg.contains("10번째")) || arrMsg.contains("곧 도착")){  // ************* note
                 JSONObject bus = new JSONObject();
-                bus.put("station_id", element.get("stId"));
+                bus.put("station_id", element.get("arsId"));
                 bus.put("arriving_at", element.get("stNm"));
                 bus.put("plateNo", element.get("plainNo1"));
                 operating_buses.put(bus);
