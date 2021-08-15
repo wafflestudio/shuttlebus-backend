@@ -31,6 +31,8 @@ public class GetAPIController {
     @GetMapping("/stations/{stationid}")
     public String getStations(@PathVariable("stationid") String id) throws Exception{
 
+        if(id.compareTo("50000") > 0) return PublicAPI.getShuttleStations(id);
+
         String path = "http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?serviceKey="
                 + key
                 + "&arsId=" + id;

@@ -1,4 +1,5 @@
 package com.waffle.shattlebus.backend.Service;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.waffle.shattlebus.backend.Data.BusStationInfo;
 import com.waffle.shattlebus.backend.Exception.NotFoundException;
 import org.json.JSONArray;
@@ -27,9 +28,52 @@ public class PublicAPI {
 
     String key = "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D";
 
-    public static String getStations(String id, String path) throws Exception{
+    private static JSONArray shuttleArr(String id, String dir) {
+        List<ArrayList<String>> stations = BusStationInfo.getShuttleStations();
 
+        JSONArray busList = new JSONArray();
+        for (ArrayList<String> info : stations) {
+            boolean flag = false;
+            for (int i = 2; i < info.size(); i++)
+                if (info.get(i).compareTo(id) == 0) {
+                    flag = true;
+                    break;
+                }
+            if (!flag) continue;
+            JSONObject ele = new JSONObject();
+            ele.put("id", info.get(0));
+            ele.put("name", info.get(1));
+            ele.put("is_shuttle", true);
+            ele.put("arrival_time", "");
+            ele.put("direction", dir);
+            busList.put(ele);
+        }
+        return busList;
+    }
+
+    public static String getShuttleStations(String id) throws Exception{
         Map<String, List<String>> BSI = BusStationInfo.getStationsAsMap();
+
+        try {
+            List<String> Info = BSI.get(id);
+            JSONObject response = new JSONObject();
+
+            response.put("id", id);
+            response.put("name", Info.get(0));
+            response.put("direction_rep", Info.get(1));
+            response.put("buses", shuttleArr(id, Info.get(1)));
+
+            return response.toString();
+        }
+        catch(NullPointerException e){
+            throw new NotFoundException("st"); // 존재하지 않는 버스일 경우
+        }
+    }
+
+    public static String getStations(String id, String path) throws Exception{
+        Map<String, List<String>> BSI = BusStationInfo.getStationsAsMap();
+        List<ArrayList<String>> stations = BusStationInfo.getShuttleStations();
+
         try {
             List<String> Info = BSI.get(id);
             JSONObject apiResponse = getJSON(path);
@@ -52,7 +96,7 @@ public class PublicAPI {
             response.put("longitude", ((JSONObject)busList.get(0)).get("gpsX").toString());
             response.put("latitude", ((JSONObject)busList.get(0)).get("gpsY").toString());
 
-            JSONArray ourList = new JSONArray();
+            JSONArray ourList = shuttleArr(id, Info.get(1));
             for (int i = 0; i < busList.length(); i++) {
                 JSONObject a = (JSONObject) busList.get(i);
                 JSONObject n = new JSONObject();
@@ -63,6 +107,7 @@ public class PublicAPI {
                 n.put("is_shuttle", false);
                 ourList.put(n);
             }
+
             response.put("buses", ourList);
 
             return response.toString();
@@ -131,13 +176,13 @@ public class PublicAPI {
 
         return result.toString();
     }
+
     public static String getShuttleBuses(String id) throws Exception {
+        Map<String, List<String>> BSI = BusStationInfo.getStationsAsMap();
         List<ArrayList<String>> shuttle = BusStationInfo.getShuttleBuses();
+        List<ArrayList<String>> stations = BusStationInfo.getShuttleStations();
+
         for(List<String> info : shuttle){
-            for(int i=0; i<info.size(); i++){
-                System.out.print(info.get(i) + "/");
-            }
-            System.out.println();
             if(info.get(0).compareTo(id) != 0) continue;
 
             JSONObject result = new JSONObject();
@@ -154,6 +199,25 @@ public class PublicAPI {
                 dispatch_interval.put(ele);
             }
             result.put("dispatch_interval", dispatch_interval);
+            for(List<String> st : stations){
+                if(st.get(0).compareTo(id) != 0) continue;
+                int idx = 0;
+                JSONArray stationinfo = new JSONArray();
+                try {
+                    for (int i = 2; i < st.size(); i++) {
+                        JSONObject ele = new JSONObject();
+                        ele.put("idx", idx++);
+                        ele.put("id", st.get(i));
+                        ele.put("name", BSI.get(st.get(i)).get(0));
+                        stationinfo.put(ele);
+                    }
+                }
+                catch(NullPointerException e){
+                    throw new NotFoundException(id); // 존재하지 않는 버스일 경우
+                }
+                result.put("stations", stationinfo);
+                break;
+            }
             return result.toString();
         }
         throw new NotFoundException("bus");
