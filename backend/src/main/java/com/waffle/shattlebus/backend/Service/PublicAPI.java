@@ -63,6 +63,10 @@ public class PublicAPI {
             response.put("direction_rep", Info.get(1));
             response.put("buses", shuttleArr(id, Info.get(1)));
 
+            response.put("longitude", Info.get(3));
+            response.put("latitude", Info.get(4));
+
+
             return response.toString();
         }
         catch(NullPointerException e){
