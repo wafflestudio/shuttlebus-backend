@@ -115,7 +115,7 @@ public class BusStationInfo {
                 String[] eachLineSplit = line.split("\t");
                 // 한줄씩 처리 ㄱㄱ
                 List<String> array = Arrays.asList(eachLineSplit);
-                busInfoList.put( array.get(0), array.subList(1,5));
+                busInfoList.put( array.get(0), array.subList(1,6));
             }
             br.close();
         } catch (Exception e) {
