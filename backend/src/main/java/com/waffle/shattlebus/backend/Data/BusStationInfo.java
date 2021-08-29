@@ -28,6 +28,23 @@ import java.util.*;
 
 public class BusStationInfo {
 
+
+    public static String getAllStations(){
+//        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        String filePath = "./src/main/resources/stationsList";
+        File file = new File(filePath); // File객체 생성
+        String line = "";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            line = reader.readLine();
+            reader.close();
+        } catch (Exception e) { e.printStackTrace();}
+        return line;
+    }
+
+
+
+
     public static List<ArrayList<String>> getBuses() {
 
         List<ArrayList<String>> buses = new ArrayList<>();

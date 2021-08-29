@@ -83,6 +83,19 @@ public class GetAPIController {
 
     }
 
+    //                              6. station 일괄 받아오기
+    @GetMapping("/stationlist")
+    public String getstationlist() {
+        return PublicAPI.getAllStations();
+    }
+
+
+
+
+
+
+
+
     @ExceptionHandler(NotFoundException.class)
     public
     ResponseEntity<Object> NotFoundMessage(NotFoundException e){

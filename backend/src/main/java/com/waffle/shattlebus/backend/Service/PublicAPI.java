@@ -250,6 +250,12 @@ public class PublicAPI {
         return response.toString();
     }
 
+    // 한번에 다 갖다주기
+    public static String getAllStations(){
+        return BusStationInfo.getAllStations();
+    }
+
+
     // 검색 기능
     private static JSONArray search_SH(String query, String tag, boolean isStation){
         // 검색 처리
