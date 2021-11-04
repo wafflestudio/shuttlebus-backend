@@ -27,6 +27,7 @@ import static com.waffle.shattlebus.backend.Search.SearchHangul.compWord;
 public class PublicAPI {
 
     String key = "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D";
+    // ? why key here
 
     private static JSONArray shuttleArr(String id, String dir) {
         List<ArrayList<String>> stations = BusStationInfo.getShuttleStations();
