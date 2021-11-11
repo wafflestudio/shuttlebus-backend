@@ -1,7 +1,5 @@
 package com.waffle.shattlebus.backend.Data;
 
-import com.waffle.shattlebus.backend.Controller.GetAPIController;
-
 import java.io.*;
 import java.util.*;
 
@@ -50,7 +48,7 @@ public class BusStationInfo {
         List<ArrayList<String>> buses = new ArrayList<>();
 
         try {
-            InputStream inputStream = GetAPIController.class.getResourceAsStream("/Buses.tsv");
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/Buses.tsv");
             read(buses, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +61,7 @@ public class BusStationInfo {
         List<ArrayList<String>> buses = new ArrayList<>();
 
         try {
-            InputStream inputStream = GetAPIController.class.getResourceAsStream("/shuttleInfo.tsv");
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/shuttleInfo.tsv");
             read(buses, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +74,7 @@ public class BusStationInfo {
         List<ArrayList<String>> stations = new ArrayList<>();
 
         try {
-            InputStream inputStream = GetAPIController.class.getResourceAsStream("/shuttleStationInfo.tsv");
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/shuttleStationInfo.tsv");
             read(stations, inputStream);
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +123,7 @@ public class BusStationInfo {
         Map<String, List<String>> busInfoList = new HashMap<>();
 
         try {
-            InputStream inputStream = GetAPIController.class.getResourceAsStream("/BusTsvInfo.tsv");
+            InputStream inputStream = BusStationInfo.class.getResourceAsStream("/BusTsvInfo.tsv");
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             String line = "";
             while((line = br.readLine())!=null) {

@@ -1,6 +1,5 @@
 package com.waffle.shattlebus.backend.Controller;
 import com.waffle.shattlebus.backend.Exception.NotFoundException;
-import com.waffle.shattlebus.backend.Data.BusStationInfo;
 import com.waffle.shattlebus.backend.Service.PublicAPI;
 import org.json.*;
 import org.springframework.http.ResponseEntity;
@@ -20,23 +19,6 @@ import static com.waffle.shattlebus.backend.Search.SearchHangul.compWord;
 @RequestMapping("/api/v1")
 public class GetAPIController {
 
-    String USER_AGENT = "Mozilla/5.0";
-    String keys[] = {
-        "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D",
-        "WSApjS8xA8hmoAiPWLblVzNkdbtpb1RKw1UvSfMfb31VU18ghPiRyDsiSyl1p4Umb9%2BYDzyRAunz6SfDAnvZHQ%3D%3D",
-        "%2FMkSz%2BUEH%2Bt7LyuQ%2B3ry95YgcaogASEEYQWNkwYZAQT%2Bk7O5ntS8hfaZ3rUFlQoSlO3DXtEk3ohBMSk8saq0sA%3D%3D",
-        "X2JIYquIWkd7%2FnJD5l7lgs2vkTY4EvBsPV8XSj9sGIbZaWL8lZ9Hg931hPLAb8qTrhvdmzcx5GxtVCs60JHcIQ%3D%3D",
-        "tempkey2" // 승한 요거 추가해주세요~~!!
-    };
-   
-    int keyA = 0;
-    int keyB = 0;
-
-    public void changekey(int type){ // 0 for get station(Type A), 1 for get bus route(Type B) 
-        if (type==0) { keyA+=1; if (keyA==5) keyA-=5;}
-        else { keyB+=1; if (keyB==5) keyB-=5; }
-    }
-
 	// 읽어주세요
 	// 동일한 하나의 키에 대해, [정류장 call 1000번], [버스 call 1000번]이므로 정류장 call을 다 써버렸더라도, 버스 call에는 사용될 수 있습니다.
 	// 따라서 keyA(정류장용)와 keyB(버스용)을 따로 보관합니다.
@@ -55,25 +37,18 @@ public class GetAPIController {
    
         if(id.compareTo("50000") > 0) return PublicAPI.getShuttleStations(id);
 
-        String path = "http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?serviceKey="
-                + keys[keyA]
-                + "&arsId=" + id;
-                
-        // for test
-        // for (int i=0; i<3000; i++) PublicAPI.getStations(id, path);
+        String path = "http://ws.bus.go.kr/api/rest/stationinfo/getStationByUid?arsId="
+                + id + "&serviceKey=";
         
         return PublicAPI.getStations(id, path);
-        
-        // 리턴벨류 확인, 필요하다면 changekey(0)
-        		 
     }
 
     //                              2-1. 버스 상세
     @GetMapping("/buses/{busid}")
     public String getBuses(@PathVariable("busid") String id) throws Exception {
 
-        String path = "http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?serviceKey="
-                + keys[keyB] + "&busRouteId=" + id;
+        String path = "http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?busRouteId="
+                + id + "&serviceKey=";
         return PublicAPI.getBuses(id, path);
          // 리턴벨류 확인, 필요하다면 changekey(0)
     }

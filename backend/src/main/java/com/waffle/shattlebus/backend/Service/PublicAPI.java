@@ -15,6 +15,7 @@ import javax.print.attribute.standard.JobName;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +27,52 @@ import static com.waffle.shattlebus.backend.Search.SearchHangul.compWord;
 @Service
 public class PublicAPI {
 
-    String key = "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D";
-    // ? why key here
+    static String keys[] = {
+            "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D",
+            "WSApjS8xA8hmoAiPWLblVzNkdbtpb1RKw1UvSfMfb31VU18ghPiRyDsiSyl1p4Umb9%2BYDzyRAunz6SfDAnvZHQ%3D%3D",
+            "%2FMkSz%2BUEH%2Bt7LyuQ%2B3ry95YgcaogASEEYQWNkwYZAQT%2Bk7O5ntS8hfaZ3rUFlQoSlO3DXtEk3ohBMSk8saq0sA%3D%3D",
+            "X2JIYquIWkd7%2FnJD5l7lgs2vkTY4EvBsPV8XSj9sGIbZaWL8lZ9Hg931hPLAb8qTrhvdmzcx5GxtVCs60JHcIQ%3D%3D",
+            "43VydJSargV5BDnwBWg5yzx34B8hTDCIfezVUNgLAZ6inubKMxBP4RJw9vZdD%2B0HVbWNAQ2CXj%2B8Hufp7%2B6ujA%3D%3D"
+    };
+
+    static int keyA = 0;
+    static int keyB = 0;
+
+    // Parse XML to JSON
+    public static JSONObject getJSON(String path) throws Exception {
+
+        URL url = new URL(path);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.getResponseCode();
+        StringBuilder response = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine="";
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        return (JSONObject) (XML.toJSONObject(response.toString())).get("ServiceResult");
+    }
+
+    public static JSONObject request(String path, boolean isStation) throws Exception {
+        JSONObject response = null;
+        String finalPath = null;
+
+        for(int i=0; i<5; i++) {
+            finalPath =  path + (isStation ? keys[keyA] : keys[keyB]);
+
+            response = getJSON(finalPath);
+
+            if (response.getJSONObject("msgHeader").getInt("headerCd") == 7 &&
+                    response.getJSONObject("msgHeader").getString("headerMsg").compareTo("Key인증실패: LIMITED NUMBER OF SERVICE REQUESTS EXCEEDS ERROR.[인증모듈 에러코드(22)]") == 0) {
+                if (isStation) keyA = (keyA + 1) % 5;
+                else keyB = (keyB + 1) % 5;
+            }
+            else break;
+        }
+        return response;
+    }
 
     private static JSONArray shuttleArr(String id, String dir) {
         List<ArrayList<String>> stations = BusStationInfo.getShuttleStations();
@@ -81,7 +126,7 @@ public class PublicAPI {
 
         try {
             List<String> Info = BSI.get(id);
-            JSONObject apiResponse = getJSON(path);
+            JSONObject apiResponse = request(path, true);
             if(apiResponse.getJSONObject("msgHeader").getInt("headerCd")==4) throw new NotFoundException("st");
             JSONObject data = apiResponse.getJSONObject("msgBody");
             JSONObject response = new JSONObject();
@@ -134,8 +179,7 @@ public class PublicAPI {
 
 
     public static String getBuses(String id, String path) throws Exception {
-
-        JSONObject response = PublicAPI.getJSON(path);
+        JSONObject response = PublicAPI.request(path, false);
         if(response.getJSONObject("msgHeader").getInt("headerCd")==4) throw new NotFoundException("bus");
         JSONObject data = response.getJSONObject("msgBody");
         JSONArray  datalist = data.getJSONArray("itemList");
@@ -319,23 +363,4 @@ public class PublicAPI {
         }
         return jArray;
     }
-
-
-    // Parse XML to JSON
-    public static JSONObject getJSON(String path) throws Exception {
-
-        URL url = new URL(path);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.getResponseCode();
-        StringBuilder response = new StringBuilder();
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine="";
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        return (JSONObject) (XML.toJSONObject(response.toString())).get("ServiceResult");
-    }
-
 }
