@@ -1,23 +1,32 @@
 package com.wafflestudio.shattlebus.services
 
+import com.wafflestudio.shattlebus.common.BusNotFound
 import com.wafflestudio.shattlebus.common.PublicApiError
 import com.wafflestudio.shattlebus.common.StationNotFound
+import com.wafflestudio.shattlebus.common.convertTo
 import com.wafflestudio.shattlebus.controllers.StationId
 import com.wafflestudio.shattlebus.data.BusStationInfo.stationsAsMap
+import com.wafflestudio.shattlebus.services.publicApi.PublicApiResponse
+import com.wafflestudio.shattlebus.services.publicApi.throwOnError
 import com.wafflestudio.shattlebus.services.response.CityBusDto
 import com.wafflestudio.shattlebus.services.response.StationDto
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.util.DefaultUriBuilderFactory
 import java.time.Duration
 
 private const val PUBLIC_API_BASE_URL = "http://ws.bus.go.kr/api/rest"
+private const val PUBLIC_API_STATION_INFO = "$PUBLIC_API_BASE_URL/stationinfo/getStationByUid?arsId={id}&serviceKey={key}"
 
 @Service
-class PublicApiService() {
+class PublicApiService {
     private val webClientBuilder = WebClient.builder()
-    private val uriBuilderFactory = DefaultUriBuilderFactory(PUBLIC_API_BASE_URL)
+    private val uriBuilderFactory = DefaultUriBuilderFactory(PUBLIC_API_BASE_URL).apply {
+        encodingMode = DefaultUriBuilderFactory.EncodingMode.NONE
+    }
 
     var keys = arrayOf(
         "k4UvnK2anWmh10%2BJiof8w7qWin6wmp72vRlUryHNKxrpQ5%2Fot599PY929AaGnv8KpuBh9%2FN0xe2%2F53ja9cgI6g%3D%3D",
@@ -32,10 +41,10 @@ class PublicApiService() {
     fun getStations(stationId: StationId): StationDto {
         val id = stationId.value
         val busStationInfo = stationsAsMap[id] ?: throw StationNotFound()
-        val cityBuses = if (stationId.isShuttleBusStation()) {
+        val cityBuses = if (!stationId.isShuttleBusStation()) {
             getCityBuses(id)
         } else null
-        return StationDto.of(id, busStationInfo, cityBuses)
+        return StationDto(id, busStationInfo, cityBuses)
     }
 
     /**
@@ -47,21 +56,25 @@ class PublicApiService() {
      *  ) { if (isStation) keyA = (keyA + 1) % 5 else keyB = (keyB + 1) % 5 } else break
      */
     fun getCityBuses(stationId: String): List<CityBusDto> {
-        val url = uriBuilderFactory
-            .uriString("/stationinfo/getStationByUid?arsId={id}&serviceKey={key}")
-            .build(stationId, keys[stationKey])
-            .toURL()
-            .toString()
-        println(url)
         val response = webClientBuilder
-            .baseUrl(url)
             .build()
             .get()
+            .uri(
+                // request URL
+                uriBuilderFactory
+                    .uriString(PUBLIC_API_STATION_INFO)
+                    .build(stationId, keys[stationKey])
+            )
+            .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
+            .acceptCharset(Charsets.UTF_8)
             .retrieve()
-            .bodyToMono(StationDto::class.java)
+            .bodyToMono(String::class.java)
             .block(Duration.ofSeconds(1))
+            ?.let(::PublicApiResponse)
+            ?.throwOnError(BusNotFound())
             ?: throw PublicApiError(HttpStatus.CONFLICT, "다시 시도해주세요.")
-        println(response)
-        return response.cityBuses ?: listOf()
+
+        val items = response.itemList
+        return items.convertTo(CityBusDto::class)
     }
 }
