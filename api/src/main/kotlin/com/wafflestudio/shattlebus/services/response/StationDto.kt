@@ -8,17 +8,15 @@ data class StationDto(
     val cityBuses: List<CityBusDto>?,
     val latitude: String,
     val longitude: String,
-) {
-    companion object {
-        fun of(id: String, stationInfo: List<String>, cityBuses: List<CityBusDto>? = null): StationDto =
-            StationDto(
-                id = id,
-                name = stationInfo[0],
-                direction_rep = stationInfo[1],
-                shuttles = TODO(),
-                cityBuses = cityBuses,
-                latitude = stationInfo[3],
-                longitude = stationInfo[4],
-            )
-    }
-}
+)
+
+fun StationDto(id: String, stationInfo: List<String>, cityBuses: List<CityBusDto>? = null) =
+    StationDto(
+        id = id,
+        name = stationInfo[0],
+        direction_rep = stationInfo[1],
+        shuttles = listOf(), // TODO
+        cityBuses = cityBuses,
+        latitude = stationInfo[3],
+        longitude = stationInfo[4],
+    )
