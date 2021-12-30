@@ -23,3 +23,4 @@ class PublicApiController(
     ): StationDto {
         return publicApiService.getStations(StationId(value = stationId))
     }
+}

@@ -13,6 +13,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 /*
+        TODO JPA 사용하기 .. 이대로는 유지 보수 절대 안됨
 
         tsv로 작성
 
@@ -121,12 +122,13 @@ object BusStationInfo {
             try {
                 val inputStream = BusStationInfo::class.java.getResourceAsStream("/BusTsvInfo.tsv")
                 val br = BufferedReader(InputStreamReader(inputStream))
-                var line = ""
-                while (br.readLine().also { line = it } != null) {
+                var line = br.readLine()
+                while (line != null) {
                     val eachLineSplit = line.split("\t").toTypedArray()
                     // 한줄씩 처리 ㄱㄱ
                     val array = Arrays.asList(*eachLineSplit)
                     busInfoList[array[0]] = array.subList(1, 6)
+                    line = br.readLine()
                 }
                 br.close()
             } catch (e: Exception) {
@@ -135,7 +137,6 @@ object BusStationInfo {
             return busInfoList
         }
 
-    @Throws(IOException::class)
     fun read(buses: MutableList<ArrayList<String>>, inputStream: InputStream?) {
         val br = BufferedReader(InputStreamReader(inputStream))
         var line = ""
