@@ -9,6 +9,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+import static com.waffle.shattlebus.backend.keys.*;
+
+
 @RestController
 @RequestMapping("/api/v1")
 public class PostAPIController {
@@ -21,13 +24,11 @@ public class PostAPIController {
     }
 
     private void gmailSend(String content) {
-
-        String user = "waffleshattlebus@gmail.com"; // 네이버일 경우 네이버 계정, gmail경우 gmail 계정
-      //  String password = "shattlebus";   // 패스워드
-	String password = "xivygdorbsvzxdje";
+        String user = getEmailId;
+        String password = getEmailPw;
         // SMTP 서버 정보를 설정한다.
         Properties prop = new Properties();
-	prop.put("mail.smtp.host", "smtp.gmail.com");
+	    prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
@@ -48,7 +49,7 @@ public class PostAPIController {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(user));
 
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress("waffleshattlebus@gmail.com"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(user));
 
             String id = String.valueOf(emailId++);
 
