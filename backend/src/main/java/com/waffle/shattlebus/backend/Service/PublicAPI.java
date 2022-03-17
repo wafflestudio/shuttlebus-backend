@@ -52,16 +52,17 @@ public class PublicAPI {
     public static JSONObject request(String path, boolean isStation) throws Exception {
         JSONObject response = null;
         String finalPath = null;
+        int sz = getKeys.length;
 
-        for(int i=0; i<5; i++) {
+        for(int i=0; i<sz; i++) {
             finalPath =  path + (isStation ? keys[keyA] : keys[keyB]);
 
             response = getJSON(finalPath);
 
             if (response.getJSONObject("msgHeader").getInt("headerCd") == 7 &&
                     response.getJSONObject("msgHeader").getString("headerMsg").compareTo("Key인증실패: LIMITED NUMBER OF SERVICE REQUESTS EXCEEDS ERROR.[인증모듈 에러코드(22)]") == 0) {
-                if (isStation) keyA = (keyA + 1) % 5;
-                else keyB = (keyB + 1) % 5;
+                if (isStation) keyA = (keyA + 1) % sz;
+                else keyB = (keyB + 1) % sz;
             }
             else break;
         }
